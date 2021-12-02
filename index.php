@@ -35,6 +35,7 @@ add_filter('woocommerce_get_variation_sale_price', 'change_price', 99, 3);
 add_action('wp_ajax_nbu_seveseting', 'nbu_seve_seting');
 add_action('wp_ajax_nbu_updates', 'nbu_updatescurs');
 add_action('wp_ajax_nbu_updatesDB', 'nbu_updatescursDB');
+
 register_activation_hook(__FILE__, 'nbu_pl_activation');
 register_deactivation_hook(__FILE__, 'nbu_pl_deactivation');
 
@@ -50,8 +51,14 @@ function register_mysettings()
     register_setting('baw-settings-group', 'nbu_code');
 }
 
+/**
+ * @param $price_nb
+ * @return float|int|mixed
+ */
 function change_price($price_nb)
 {
+    if (is_admin()) return $price_nb;
+
     $int = $price_nb;
     $kurs = round(get_option('nbu_kurs'), 3);
     if ($kurs != '') {
@@ -59,11 +66,17 @@ function change_price($price_nb)
     } else  return $int;
 }
 
+/**
+ *
+ */
 function dynamic_price_button()
 {
     add_submenu_page('woocommerce', 'Курс валют по НБУ', 'Курс валют по НБУ', 'manage_options', 'dynamic_price', 'nbu_setting_page');
 }
 
+/**
+ *
+ */
 function nbu_setting_page()
 {
     wp_enqueue_script('js', plugin_dir_url(__FILE__) . 'js.js');
